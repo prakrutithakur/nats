@@ -1,0 +1,97 @@
+// const socket = new WebSocket("ws://10.101.55.247:443");
+const socket = new WebSocket("ws://tmp-nats.dev.orahi.com:443");
+const nkseed = `SUAHNJ6YIC5R4V6QTKFEUIBSMCOI36LCIPQCE7YMGTN4J6ULY222GJ5PSM`;
+
+socket.onopen = function () {
+  console.log("socket open");
+  socket.send(nkseed);
+};
+
+socket.onmessage = function (event) {
+  const reader = new FileReader();
+  reader.readAsText(event.data);
+  reader.onload = function () {
+    console.log("data", reader.result);
+    // const data = JSON.parse(reader.result);
+  };
+  reader.onerror = function (error) {
+    console.error("Error reading data:", error);
+  };
+
+  const readerBinary = new FileReader();
+  readerBinary.readAsDataURL(event.data);
+  readerBinary.onload = function () {
+    console.log("dataURLBinary", readerBinary.result);
+    // const a = document.createElement("a");
+    // a.href = readerBinary.result;
+    // a.download = "downloaded_file.zip";
+    // document.body.appendChild(a);
+    // a.click();
+    // document.body.removeChild(a);
+  };
+  readerBinary.onerror = function (error) {
+    console.error("Error reading data:", error);
+  };
+};
+
+socket.onclose = function (event) {
+  console.log("WebSocket is closed.");
+};
+
+socket.onerror = function (error) {
+  console.error("WebSocket error:", error);
+};
+
+// import { useEffect } from "react";
+// import {
+//   connect,
+//   StringCodec,
+//   nkeyAuthenticator,
+//   usernamePasswordAuthenticator,
+// } from "../../../../../node_modules/nats.ws/lib/src/mod";
+
+// const nkeySeed = process.env.REACT_APP_NKSEED;
+
+// const NatsComponentWorking = ({ setmessage }) => {
+//   useEffect(() => {
+//     async function connectToNATS() {
+//       try {
+//         const seed = new TextEncoder().encode(nkeySeed);
+//         const nc = await connect({
+//           servers: "ws://10.101.37.185:8080",
+//           // authenticator: nkeyAuthenticator(seed),
+//           // authenticator: usernamePasswordAuthenticator({
+//           //   user: "sachin",
+//           //   pass: "secret",
+//           // }),
+//           user: "sachin",
+//           pass: "secret",
+//         });
+//         console.log("nc", nc);
+//         const sc = StringCodec();
+//         nc.publish("raw.sachin.test", sc.encode("Hello from React!"));
+//         const sub = nc.subscribe("raw.sachin.test");
+//         // const sub = nc.subscribe("eber.iw-G26.283049d75d529b40.gps-signal");
+//         (async () => {
+//           for await (const msg of sub) {
+//             try {
+//               const decodedmessage = JSON.parse(sc.decode(msg.data));
+//               console.log(decodedmessage);
+//               setmessage(decodedmessage.dtc_list);
+//               // setmessage((pre) => [...pre, decodedmessage]);
+//             } catch (error) {
+//               console.log("error", error);
+//             }
+//           }
+//         })();
+//       } catch (error) {
+//         console.error("Error connecting to NATS:", error);
+//       }
+//     }
+//     connectToNATS();
+//   }, []);
+
+//   return null;
+// };
+
+// export default NatsComponentWorking;
